@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpRequest
+from django.http import HttpResponse, HttpRequest, Http404
 
 
 def about(request: HttpRequest) -> HttpResponse:
@@ -24,3 +24,16 @@ def categories_by_slug(request: HttpRequest, cat_slug: str) -> HttpResponse:
 
 def archive(request: HttpRequest, year: int) -> HttpResponse:
     return HttpResponse(f'<h1>Архив по годам</h1><p>year: {year}</p>')
+
+
+def post_detail(request: HttpRequest) -> HttpResponse:
+    if request.GET:
+        response = '|'.join(f'{key}={value}' for key, value in request.GET.items())
+        return HttpResponse(response)
+    return HttpResponse('GET is empty')
+
+
+def posts_list(request: HttpRequest, year: int) -> HttpResponse:
+    if year < 1990 or year > 2023:
+        raise Http404
+    return HttpResponse(f'posts: {year}')
