@@ -1,5 +1,8 @@
-from django.shortcuts import render
+import datetime
+
 from django.http import HttpResponse, HttpRequest, Http404
+from django.shortcuts import redirect
+from django.urls import reverse
 
 
 def about(request: HttpRequest) -> HttpResponse:
@@ -23,6 +26,9 @@ def categories_by_slug(request: HttpRequest, cat_slug: str) -> HttpResponse:
 
 
 def archive(request: HttpRequest, year: int) -> HttpResponse:
+    if year > datetime.datetime.now().year:
+        uri = reverse('home')
+        return redirect(uri)
     return HttpResponse(f'<h1>Архив по годам</h1><p>year: {year}</p>')
 
 
