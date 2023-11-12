@@ -1,11 +1,13 @@
-import datetime
+from django.http import HttpResponse, HttpRequest
+from django.shortcuts import render
 
-from django.http import HttpResponse, HttpRequest, Http404
-from django.shortcuts import redirect, render
-from django.urls import reverse
-
-
-menu = ['О сайте', 'Добавить статью', 'Обратная связь', 'Войти']
+menu = [
+    {'title': 'Главная', 'url_name': 'home'},
+    {'title': 'О сайте', 'url_name': 'about'},
+    {'title': 'Добавить статью', 'url_name': 'add_page'},
+    {'title': 'Обратная связь', 'url_name': 'contact'},
+    {'title': 'Войти', 'url_name': 'login'}
+]
 
 data_db = [
     {'id': 1, 'title': 'Анджелина Джоли', 'content': 'Биография Анджелины Джоли', 'is_published': True},
@@ -27,33 +29,17 @@ def about(request: HttpRequest) -> HttpResponse:
     return render(request, 'women/about.html', {'title': 'О сайте'})
 
 
-def catalog(request: HttpRequest) -> HttpResponse:
-    return HttpResponse('catalog')
+def show_post(request: HttpRequest, post_id: int) -> HttpResponse:
+    return HttpResponse(f'Отображение статьи с id: {post_id}')
 
 
-def categories(request: HttpRequest, cat_id: int) -> HttpResponse:
-    return HttpResponse(f'<h1>Статитьи по категориям</h1><p>id: {cat_id}</p>')
+def add_page(request: HttpRequest) -> HttpResponse:
+    return HttpResponse(f'Добавление статьи')
 
 
-def categories_by_slug(request: HttpRequest, cat_slug: str) -> HttpResponse:
-    return HttpResponse(f'<h1>Статья по slug</h1><p>slug: {cat_slug}</p>')
+def contact(request: HttpRequest) -> HttpResponse:
+    return HttpResponse(f'Обратная связь')
 
 
-def archive(request: HttpRequest, year: int) -> HttpResponse:
-    if year > datetime.datetime.now().year:
-        uri = reverse('home')
-        return redirect(uri)
-    return HttpResponse(f'<h1>Архив по годам</h1><p>year: {year}</p>')
-
-
-def post_detail(request: HttpRequest) -> HttpResponse:
-    if request.GET:
-        response = '|'.join(f'{key}={value}' for key, value in request.GET.items())
-        return HttpResponse(response)
-    return HttpResponse('GET is empty')
-
-
-def posts_list(request: HttpRequest, year: int) -> HttpResponse:
-    if year < 1990 or year > 2023:
-        raise Http404
-    return HttpResponse(f'posts: {year}')
+def login(request: HttpRequest) -> HttpResponse:
+    return HttpResponse(f'Авторизация')
