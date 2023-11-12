@@ -1,20 +1,20 @@
 import datetime
 
 from django.http import HttpResponse, HttpRequest, Http404
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.urls import reverse
 
 
+def index(request: HttpRequest) -> HttpResponse:
+    return render(request, 'women/index.html')
+
+
 def about(request: HttpRequest) -> HttpResponse:
-    return HttpResponse('О сайте')
+    return render(request, 'women/about.html')
 
 
 def catalog(request: HttpRequest) -> HttpResponse:
     return HttpResponse('catalog')
-
-
-def index(request: HttpRequest) -> HttpResponse:
-    return HttpResponse('Страница приложения women')
 
 
 def categories(request: HttpRequest, cat_id: int) -> HttpResponse:
