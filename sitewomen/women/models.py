@@ -1,6 +1,5 @@
 from django.db import models
 
-
 NULLABLE = {'null': True, 'blank': True}
 
 
@@ -12,7 +11,7 @@ class Women(models.Model):
     is_published = models.BooleanField(default=True, verbose_name='Опубликовано')
 
     def __str__(self):
-        return f'{self.title} ({self.content[:20]}...)'
+        return f'({self.pk}){self.title}'
 
     class Meta:
         verbose_name = 'Женщина'
