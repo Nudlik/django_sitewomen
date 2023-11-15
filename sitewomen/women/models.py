@@ -16,3 +16,7 @@ class Women(models.Model):
     class Meta:
         verbose_name = 'Женщина'
         verbose_name_plural = 'Женщины'
+        ordering = ['-time_create']
+        indexes = [
+            models.Index(fields=['-time_create'])
+        ]
