@@ -60,10 +60,12 @@ def login(request: HttpRequest) -> HttpResponse:
 
 
 def show_category(request: HttpRequest, cat_id: int) -> HttpResponse:
+    posts = Women.objects.filter(is_published=True)
+
     data = {
         'title': 'Главная страница',
         'menu': menu,
-        'posts': [i for i in data_db if i['is_published']],
+        'posts': posts,
         'cat_selected': cat_id,
     }
     return render(request, 'women/index.html', context=data)
