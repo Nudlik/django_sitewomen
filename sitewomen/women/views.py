@@ -1,7 +1,7 @@
 from django.http import HttpResponse, HttpRequest
 from django.shortcuts import render, get_object_or_404
 
-from .models import Women
+from .models import Women, Category
 
 menu = [
     {'title': 'Главная', 'url_name': 'home'},
@@ -9,12 +9,6 @@ menu = [
     {'title': 'Добавить статью', 'url_name': 'add_page'},
     {'title': 'Обратная связь', 'url_name': 'contact'},
     {'title': 'Войти', 'url_name': 'login'}
-]
-
-cats_db = [
-    {'id': 1, 'name': 'Актрисы'},
-    {'id': 2, 'name': 'Певицы'},
-    {'id': 3, 'name': 'Спортсменки'},
 ]
 
 
@@ -59,13 +53,14 @@ def login(request: HttpRequest) -> HttpResponse:
     return HttpResponse(f'Авторизация')
 
 
-def show_category(request: HttpRequest, cat_id: int) -> HttpResponse:
-    posts = Women.objects.filter(is_published=True)
+def show_category(request: HttpRequest, cat_slug: str) -> HttpResponse:
+    category = get_object_or_404(Category, slug=cat_slug)
+    posts = Women.published.filter(cat_id=category.pk)
 
     data = {
-        'title': 'Главная страница',
+        'title': f'Категория: {category.name}',
         'menu': menu,
         'posts': posts,
-        'cat_selected': cat_id,
+        'cat_selected': category.pk,
     }
     return render(request, 'women/index.html', context=data)
