@@ -23,7 +23,9 @@ class Women(models.Model):
     time_create = models.DateTimeField(auto_now_add=True, verbose_name='Время создания')
     time_update = models.DateTimeField(auto_now=True, verbose_name='Время изменения')
     is_published = models.BooleanField(choices=Status.choices, default=Status.DRAFT, verbose_name='Опубликовано')
+
     cat = models.ForeignKey(to='Category', on_delete=models.PROTECT, verbose_name='Категория')
+    tags = models.ManyToManyField(to='TagPost', blank=True, related_name='women', verbose_name='Теги')
 
     objects = models.Manager()
     published = PublishedManager()
@@ -52,3 +54,11 @@ class Category(models.Model):
 
     def get_absolute_url(self) -> str:
         return reverse('category', kwargs={'cat_slug': self.slug})
+
+
+class TagPost(models.Model):
+    tag = models.CharField(max_length=100, db_index=True, verbose_name='Тег')
+    slug = models.SlugField(max_length=255, unique=True, db_index=True, verbose_name='Слаг')
+
+    def __str__(self):
+        return self.tag
