@@ -1,7 +1,7 @@
 from django.http import HttpResponse, HttpRequest
 from django.shortcuts import render, get_object_or_404
 
-from .models import Women, Category
+from .models import Women, Category, TagPost
 
 menu = [
     {'title': 'Главная', 'url_name': 'home'},
@@ -63,4 +63,18 @@ def show_category(request: HttpRequest, cat_slug: str) -> HttpResponse:
         'posts': posts,
         'cat_selected': category.pk,
     }
+    return render(request, 'women/index.html', context=data)
+
+
+def show_tag_postlist(request: HttpRequest, tag_slug: str) -> HttpResponse:
+    tag = get_object_or_404(TagPost, slug=tag_slug)
+    posts = Women.published.filter(tags__slug=tag.slug)
+
+    data = {
+        'title': f'Тег: {tag.tag}',
+        'menu': menu,
+        'posts': posts,
+        'cat_selected': None,
+    }
+
     return render(request, 'women/index.html', context=data)
