@@ -26,6 +26,11 @@ class Women(models.Model):
 
     cat = models.ForeignKey(to='Category', on_delete=models.PROTECT, verbose_name='Категория')
     tags = models.ManyToManyField(to='TagPost', blank=True, related_name='women', verbose_name='Теги')
+    husband = models.OneToOneField(to='Husband',
+                                   on_delete=models.SET_NULL,
+                                   **NULLABLE,
+                                   related_name='married',
+                                   verbose_name='Супруг')
 
     objects = models.Manager()
     published = PublishedManager()
@@ -65,3 +70,12 @@ class TagPost(models.Model):
 
     def get_absolute_url(self) -> str:
         return reverse('tag', kwargs={'tag_slug': self.slug})
+
+
+class Husband(models.Model):
+    name = models.CharField(max_length=255, verbose_name='Имя')
+    age = models.IntegerField(**NULLABLE, verbose_name='Возраст')
+
+    def __str__(self):
+        return self.name
+
