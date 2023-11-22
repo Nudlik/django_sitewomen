@@ -22,7 +22,9 @@ class Women(models.Model):
     content = models.TextField(**NULLABLE, verbose_name='Содержимое')
     time_create = models.DateTimeField(auto_now_add=True, verbose_name='Время создания')
     time_update = models.DateTimeField(auto_now=True, verbose_name='Время изменения')
-    is_published = models.BooleanField(choices=Status.choices, default=Status.DRAFT, verbose_name='Опубликовано')
+    is_published = models.BooleanField(choices=tuple(map(lambda x: (bool(x[0]), x[1]), Status.choices)),
+                                       default=Status.DRAFT,
+                                       verbose_name='Опубликовано')
 
     cat = models.ForeignKey(to='Category', on_delete=models.PROTECT, related_name='posts', verbose_name='Категория')
     tags = models.ManyToManyField(to='TagPost', blank=True, related_name='women', verbose_name='Теги')
@@ -35,9 +37,6 @@ class Women(models.Model):
     objects = models.Manager()
     published = PublishedManager()
 
-    def __str__(self):
-        return self.title
-
     class Meta:
         verbose_name = 'Известные женщины'
         verbose_name_plural = 'Известные женщины'
@@ -46,6 +45,9 @@ class Women(models.Model):
             models.Index(fields=['-time_create'])
         ]
 
+    def __str__(self):
+        return self.title
+
     def get_absolute_url(self) -> str:
         return reverse('post', kwargs={'post_slug': self.slug})
 
@@ -53,6 +55,10 @@ class Women(models.Model):
 class Category(models.Model):
     name = models.CharField(max_length=100, db_index=True, verbose_name='Название')
     slug = models.SlugField(max_length=255, unique=True, db_index=True, verbose_name='Слаг')
+
+    class Meta:
+        verbose_name = 'Категория'
+        verbose_name_plural = 'Категории'
 
     def __str__(self):
         return self.name
@@ -65,6 +71,10 @@ class TagPost(models.Model):
     tag = models.CharField(max_length=100, db_index=True, verbose_name='Тег')
     slug = models.SlugField(max_length=255, unique=True, db_index=True, verbose_name='Слаг')
 
+    class Meta:
+        verbose_name = 'Тег'
+        verbose_name_plural = 'Теги'
+
     def __str__(self):
         return self.tag
 
@@ -75,6 +85,10 @@ class TagPost(models.Model):
 class Husband(models.Model):
     name = models.CharField(max_length=255, verbose_name='Имя')
     age = models.IntegerField(**NULLABLE, verbose_name='Возраст')
+
+    class Meta:
+        verbose_name = 'Супруг'
+        verbose_name_plural = 'Супруги'
 
     def __str__(self):
         return self.name
