@@ -24,7 +24,7 @@ class Women(models.Model):
     time_update = models.DateTimeField(auto_now=True, verbose_name='Время изменения')
     is_published = models.BooleanField(choices=Status.choices, default=Status.DRAFT, verbose_name='Опубликовано')
 
-    cat = models.ForeignKey(to='Category', on_delete=models.PROTECT, verbose_name='Категория')
+    cat = models.ForeignKey(to='Category', on_delete=models.PROTECT, related_name='posts', verbose_name='Категория')
     tags = models.ManyToManyField(to='TagPost', blank=True, related_name='women', verbose_name='Теги')
     husband = models.OneToOneField(to='Husband',
                                    on_delete=models.SET_NULL,
@@ -78,4 +78,3 @@ class Husband(models.Model):
 
     def __str__(self):
         return self.name
-
