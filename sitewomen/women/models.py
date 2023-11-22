@@ -36,11 +36,11 @@ class Women(models.Model):
     published = PublishedManager()
 
     def __str__(self):
-        return f'({self.pk}){self.title}'
+        return self.title
 
     class Meta:
-        verbose_name = 'Женщина'
-        verbose_name_plural = 'Женщины'
+        verbose_name = 'Известные женщины'
+        verbose_name_plural = 'Известные женщины'
         ordering = ['-time_create']
         indexes = [
             models.Index(fields=['-time_create'])
