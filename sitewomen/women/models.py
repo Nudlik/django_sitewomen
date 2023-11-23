@@ -1,3 +1,4 @@
+import transliterate
 from django.db import models
 from django.urls import reverse
 
@@ -50,6 +51,11 @@ class Women(models.Model):
 
     def get_absolute_url(self) -> str:
         return reverse('post', kwargs={'post_slug': self.slug})
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = transliterate.slugify(self.title)
+        super().save(*args, **kwargs)
 
 
 class Category(models.Model):

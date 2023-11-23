@@ -23,6 +23,7 @@ class MariedFilter(admin.SimpleListFilter):
 @admin.register(Women)
 class WomenAdmin(admin.ModelAdmin):
     list_display = ['title', 'cat', 'time_create', 'is_published', 'brief_info', 'count_tags']
+    prepopulated_fields = {'slug': ('title',)}
     list_display_links = ['title']
     ordering = ['-time_create', 'title']
     search_fields = ['title', 'cat__name']
@@ -30,6 +31,8 @@ class WomenAdmin(admin.ModelAdmin):
     list_per_page = 10
     actions = ['set_published', 'set_draft']
     list_filter = ['is_published', MariedFilter, 'cat__name']
+    fields = ['title', 'slug', 'cat', 'content', 'tags', 'is_published']
+    filter_horizontal = ['tags']
 
     @admin.display(description='Краткое описание', ordering='content')
     def brief_info(self, women: Women):
