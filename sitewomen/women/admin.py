@@ -29,7 +29,7 @@ class WomenAdmin(admin.ModelAdmin):
     list_editable = ['is_published']
     list_per_page = 10
     actions = ['set_published', 'set_draft']
-    list_filter = ['is_published', MariedFilter, 'cat']
+    list_filter = ['is_published', MariedFilter, 'cat__name']
 
     @admin.display(description='Краткое описание', ordering='content')
     def brief_info(self, women: Women):
