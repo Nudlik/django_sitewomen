@@ -1,20 +1,6 @@
 from django import forms
-from django.utils.deconstruct import deconstructible
 
-from .models import Category, Husband, TagPost, Women
-
-
-@deconstructible
-class RussianValidator:
-    ALLOWED_CHARS = set('АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЬЫЪЭЮЯабвгдеёжзийклмнопрстуфхцчшщьыъэюя0123456789- ')
-    code = 'russian'
-
-    def __init__(self, msg=None):
-        self.msg = msg if msg else 'Должны быть только: русские символы, цифры, дефис или пробел'
-
-    def __call__(self, word, *args, **kwargs):
-        if not all(char in self.ALLOWED_CHARS for char in word):
-            raise forms.ValidationError(self.msg, code=self.code)
+from .models import Category, Husband, Women
 
 
 class AddPostForm(forms.ModelForm):
@@ -39,3 +25,7 @@ class AddPostForm(forms.ModelForm):
         if not all(char in ALLOWED_CHARS for char in title):
             raise forms.ValidationError('Должны быть только: русские символы, цифры, дефис или пробел')
         return title
+
+
+class UploadImageForm(forms.Form):
+    image = forms.ImageField()
