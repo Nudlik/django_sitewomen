@@ -47,16 +47,8 @@ def add_page(request: HttpRequest) -> HttpResponse:
     if request.method == 'POST':
         form = AddPostForm(request.POST)
         if form.is_valid():
-            try:
-                cleaned_data: dict = form.cleaned_data
-                tags = cleaned_data.pop('tags')
-                w = Women.objects.create(**cleaned_data)
-                w.tags.set(tags)
-                w.save()
-                return redirect('home')
-            except Exception as e:
-                print(e)
-                form.add_error(None, 'Ошибка добавления статьи')
+            form.save()
+            return redirect('home')
     else:
         form = AddPostForm()
 
