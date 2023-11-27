@@ -10,7 +10,7 @@ class AddPostForm(forms.ModelForm):
 
     class Meta:
         model = Women
-        fields = ['title', 'slug', 'content', 'is_published', 'cat', 'husband', 'tags']
+        fields = ['title', 'slug', 'content', 'photo', 'is_published', 'cat', 'husband', 'tags']
         widgets = {
             'content': forms.Textarea(attrs={'cols': 50, 'rows': 5, 'placeholder': 'Содержимое статьи'}),
             # 'tags': forms.CheckboxSelectMultiple(attrs={'class': 'horizontal'}),

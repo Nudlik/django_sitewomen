@@ -26,6 +26,7 @@ class Women(models.Model):
     is_published = models.BooleanField(choices=tuple(map(lambda x: (bool(x[0]), x[1]), Status.choices)),
                                        default=Status.DRAFT,
                                        verbose_name='Опубликовано')
+    photo = models.ImageField(upload_to='photos/%Y/%m/%d/', default=None, **NULLABLE, verbose_name='Фото')
 
     cat = models.ForeignKey(to='Category', on_delete=models.PROTECT, related_name='posts', verbose_name='Категория')
     tags = models.ManyToManyField(to='TagPost', blank=True, related_name='women', verbose_name='Теги')
