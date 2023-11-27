@@ -1,7 +1,7 @@
 from django.http import HttpResponse, HttpRequest
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
-from django.views.generic import TemplateView, ListView
+from django.views.generic import TemplateView, ListView, DetailView
 
 from .forms import AddPostForm, UploadImageForm
 from .models import Women, Category, TagPost
@@ -57,17 +57,19 @@ def about(request: HttpRequest) -> HttpResponse:
     return render(request, 'women/about.html', context=data)
 
 
-def show_post(request: HttpRequest, post_slug: str) -> HttpResponse:
-    post = get_object_or_404(Women, slug=post_slug)
+class ShowPostView(DetailView):
+    template_name = 'women/post.html'
+    slug_url_kwarg = 'post_slug'
+    context_object_name = 'post'
 
-    data = {
-        'title': post.title,
-        'menu': menu,
-        'post': post,
-        'cat_selected': 0,
-    }
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = context['post'].title
+        context['menu'] = menu
+        return context
 
-    return render(request, 'women/post.html', context=data)
+    def get_object(self, queryset=None):
+        return get_object_or_404(Women.published, slug=self.kwargs[self.slug_url_kwarg])
 
 
 class AddPageView(View):
