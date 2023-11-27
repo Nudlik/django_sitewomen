@@ -1,4 +1,5 @@
 from django.contrib import admin, messages
+from django.utils.safestring import mark_safe
 
 from women.models import Women, Category, TagPost, Husband
 
@@ -22,7 +23,7 @@ class MariedFilter(admin.SimpleListFilter):
 
 @admin.register(Women)
 class WomenAdmin(admin.ModelAdmin):
-    list_display = ['title', 'cat', 'time_create', 'is_published', 'brief_info', 'count_tags']
+    list_display = ['title', 'cat', 'show_photo', 'time_create', 'is_published', 'brief_info', 'count_tags']
     prepopulated_fields = {'slug': ('title',)}
     list_display_links = ['title']
     ordering = ['-time_create', 'title']
@@ -31,8 +32,10 @@ class WomenAdmin(admin.ModelAdmin):
     list_per_page = 10
     actions = ['set_published', 'set_draft']
     list_filter = ['is_published', MariedFilter, 'cat__name']
-    fields = ['title', 'slug', 'cat', 'content', 'tags', 'is_published']
+    fields = ['title', 'slug', 'cat', 'content', 'photo', 'show_photo', 'tags', 'is_published']
+    readonly_fields = ['show_photo']
     filter_horizontal = ['tags']
+    save_on_top = True
 
     @admin.display(description='Краткое описание', ordering='content')
     def brief_info(self, women: Women):
@@ -41,6 +44,12 @@ class WomenAdmin(admin.ModelAdmin):
     @admin.display(description='Количество тегов')
     def count_tags(self, women: Women):
         return len(women.tags.all())
+
+    @admin.display(description='Предпросмотр фотографии')
+    def show_photo(self, women: Women):
+        if women.photo:
+            return mark_safe(f'<img src="{women.photo.url}" width="50"')
+        return 'Фото отсутствует'
 
     @admin.action(description='Опубликовать')
     def set_published(self, request, queryset):
