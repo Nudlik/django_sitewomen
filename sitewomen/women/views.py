@@ -1,7 +1,7 @@
 from django.http import HttpResponse, HttpRequest
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views import View
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, ListView
 
 from .forms import AddPostForm, UploadImageForm
 from .models import Women, Category, TagPost
@@ -15,14 +15,24 @@ menu = [
 ]
 
 
-class WomenHomeView(TemplateView):
+class WomenHomeView(ListView):
     template_name = 'women/index.html'
+    context_object_name = 'posts'
     extra_context = {
         'title': 'Главная страница',
         'menu': menu,
-        'posts': Women.published.all().select_related('cat'),
         'cat_selected': 0,
     }
+
+    def get_queryset(self):
+        return Women.published.all().select_related('cat')
+
+    # def get_context_data(self, *, object_list=None, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+        # context['title'] = 'Главная страница'
+        # context['menu'] = menu
+        # context['cat_selected'] = 0
+        # return context
 
 
 def handle_uploaded_file(f):
@@ -91,17 +101,22 @@ def login(request: HttpRequest) -> HttpResponse:
     return HttpResponse(f'Авторизация')
 
 
-def show_category(request: HttpRequest, cat_slug: str) -> HttpResponse:
-    category = get_object_or_404(Category, slug=cat_slug)
-    posts = Women.published.filter(cat_id=category.pk).select_related('cat')
+class WomenCategoryView(ListView):
+    model = Women
+    template_name = 'women/index.html'
+    context_object_name = 'posts'
+    allow_empty = False
 
-    data = {
-        'title': f'Категория: {category.name}',
-        'menu': menu,
-        'posts': posts,
-        'cat_selected': category.pk,
-    }
-    return render(request, 'women/index.html', context=data)
+    def get_queryset(self):
+        return Women.published.filter(cat__slug=self.kwargs['cat_slug']).select_related('cat')
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        cat = context['posts'][0].cat
+        context['title'] = f'Категория - {cat.name}'
+        context['menu'] = menu
+        context['cat_selected'] = cat.pk
+        return context
 
 
 def show_tag_postlist(request: HttpRequest, tag_slug: str) -> HttpResponse:
