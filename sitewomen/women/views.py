@@ -119,15 +119,18 @@ class WomenCategoryView(ListView):
         return context
 
 
-def show_tag_postlist(request: HttpRequest, tag_slug: str) -> HttpResponse:
-    tag = get_object_or_404(TagPost, slug=tag_slug)
-    posts = Women.published.filter(tags__slug=tag.slug).select_related('cat')
+class WomenTagView(ListView):
+    template_name = 'women/index.html'
+    context_object_name = 'posts'
+    allow_empty = False
 
-    data = {
-        'title': f'Тег: {tag.tag}',
-        'menu': menu,
-        'posts': posts,
-        'cat_selected': None,
-    }
+    def get_queryset(self):
+        return Women.published.filter(tags__slug=self.kwargs['tag_slug']).select_related('cat')
 
-    return render(request, 'women/index.html', context=data)
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        tag = context['posts'][0].tags.all()[0]
+        context['title'] = f'Тег - {tag.tag}'
+        context['menu'] = menu
+        context['cat_selected'] = None
+        return context
