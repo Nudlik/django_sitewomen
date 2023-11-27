@@ -1,5 +1,7 @@
 from django.http import HttpResponse, HttpRequest
 from django.shortcuts import render, get_object_or_404, redirect
+from django.views import View
+from django.views.generic import TemplateView
 
 from .forms import AddPostForm, UploadImageForm
 from .models import Women, Category, TagPost
@@ -13,16 +15,14 @@ menu = [
 ]
 
 
-def index(request: HttpRequest) -> HttpResponse:
-    posts = Women.published.all().select_related('cat')
-
-    data = {
+class WomenHomeView(TemplateView):
+    template_name = 'women/index.html'
+    extra_context = {
         'title': 'Главная страница',
         'menu': menu,
-        'posts': posts,
+        'posts': Women.published.all().select_related('cat'),
         'cat_selected': 0,
     }
-    return render(request, 'women/index.html', context=data)
 
 
 def handle_uploaded_file(f):
@@ -60,22 +60,27 @@ def show_post(request: HttpRequest, post_slug: str) -> HttpResponse:
     return render(request, 'women/post.html', context=data)
 
 
-def add_page(request: HttpRequest) -> HttpResponse:
+class AddPageView(View):
+    def get(self, request):
+        form = AddPostForm()
+        data = {
+            'title': 'Добавление статьи',
+            'menu': menu,
+            'form': form,
+        }
+        return render(request, 'women/add_page.html', context=data)
 
-    if request.method == 'POST':
+    def post(self, request):
         form = AddPostForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             return redirect('home')
-    else:
-        form = AddPostForm()
-
-    data = {
-        'title': 'Добавление статьи',
-        'menu': menu,
-        'form': form,
-    }
-    return render(request, 'women/add_page.html', context=data)
+        data = {
+            'title': 'Добавление статьи',
+            'menu': menu,
+            'form': form,
+        }
+        return render(request, 'women/add_page.html', context=data)
 
 
 def contact(request: HttpRequest) -> HttpResponse:
