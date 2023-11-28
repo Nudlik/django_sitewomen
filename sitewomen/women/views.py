@@ -1,7 +1,8 @@
 from django.http import HttpResponse, HttpRequest
 from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic import TemplateView, ListView, DetailView
+from django.views.generic import TemplateView, ListView, DetailView, FormView
 
 from .forms import AddPostForm, UploadImageForm
 from .models import Women, Category, TagPost
@@ -72,27 +73,18 @@ class ShowPostView(DetailView):
         return get_object_or_404(Women.published, slug=self.kwargs[self.slug_url_kwarg])
 
 
-class AddPageView(View):
-    def get(self, request):
-        form = AddPostForm()
-        data = {
-            'title': 'Добавление статьи',
-            'menu': menu,
-            'form': form,
-        }
-        return render(request, 'women/add_page.html', context=data)
+class AddPageView(FormView):
+    form_class = AddPostForm
+    template_name = 'women/add_page.html'
+    success_url = reverse_lazy('home')
+    extra_context = {
+        'title': 'Добавление статьи',
+        'menu': menu,
+    }
 
-    def post(self, request):
-        form = AddPostForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return redirect('home')
-        data = {
-            'title': 'Добавление статьи',
-            'menu': menu,
-            'form': form,
-        }
-        return render(request, 'women/add_page.html', context=data)
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)
 
 
 def contact(request: HttpRequest) -> HttpResponse:
