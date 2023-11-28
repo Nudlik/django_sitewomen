@@ -4,24 +4,14 @@ from django.views.generic import ListView, DetailView, CreateView
 
 from .forms import AddPostForm, UploadImageForm
 from .models import Women
-
-menu = [
-    {'title': 'Главная', 'url_name': 'home'},
-    {'title': 'О сайте', 'url_name': 'about'},
-    {'title': 'Добавить статью', 'url_name': 'add_page'},
-    {'title': 'Обратная связь', 'url_name': 'contact'},
-    {'title': 'Войти', 'url_name': 'login'}
-]
+from .utils import DataMixin
 
 
-class WomenHomeView(ListView):
+class WomenHomeView(DataMixin, ListView):
     template_name = 'women/index.html'
     context_object_name = 'posts'
-    extra_context = {
-        'title': 'Главная страница',
-        'menu': menu,
-        'cat_selected': 0,
-    }
+    title_page = 'Главная страница'
+    cat_selected = 0
 
     def get_queryset(self):
         return Women.published.all().select_related('cat')
@@ -43,34 +33,28 @@ def about(request: HttpRequest) -> HttpResponse:
 
     data = {
         'title': 'О сайте',
-        'menu': menu,
         'form': form,
     }
     return render(request, 'women/about.html', context=data)
 
 
-class ShowPostView(DetailView):
+class ShowPostView(DataMixin, DetailView):
     template_name = 'women/post.html'
     slug_url_kwarg = 'post_slug'
     context_object_name = 'post'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = context['post'].title
-        context['menu'] = menu
-        return context
+        return self.get_mixin_context(context, title=context['post'].title)
 
     def get_object(self, queryset=None):
         return get_object_or_404(Women.published, slug=self.kwargs[self.slug_url_kwarg])
 
 
-class AddPageView(CreateView):
+class AddPageView(DataMixin, CreateView):
     form_class = AddPostForm
     template_name = 'women/add_page.html'
-    extra_context = {
-        'title': 'Добавление статьи',
-        'menu': menu,
-    }
+    title_page = 'Добавление статьи'
 
 
 def contact(request: HttpRequest) -> HttpResponse:
@@ -81,7 +65,7 @@ def login(request: HttpRequest) -> HttpResponse:
     return HttpResponse(f'Авторизация')
 
 
-class WomenCategoryView(ListView):
+class WomenCategoryView(DataMixin, ListView):
     model = Women
     template_name = 'women/index.html'
     context_object_name = 'posts'
@@ -93,13 +77,13 @@ class WomenCategoryView(ListView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         cat = context['posts'][0].cat
-        context['title'] = f'Категория - {cat.name}'
-        context['menu'] = menu
-        context['cat_selected'] = cat.pk
-        return context
+        return self.get_mixin_context(context,
+                                      title=f'Категория - {cat.name}',
+                                      cat_selected=cat.pk
+                                      )
 
 
-class WomenTagView(ListView):
+class WomenTagView(DataMixin, ListView):
     template_name = 'women/index.html'
     context_object_name = 'posts'
     allow_empty = False
@@ -110,7 +94,4 @@ class WomenTagView(ListView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         tag = context['posts'][0].tags.all()[0]
-        context['title'] = f'Тег - {tag.tag}'
-        context['menu'] = menu
-        context['cat_selected'] = None
-        return context
+        return self.get_mixin_context(context, title=f'Тег - {tag.tag}')
