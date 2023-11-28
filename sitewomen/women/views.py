@@ -1,11 +1,9 @@
 from django.http import HttpResponse, HttpRequest
-from django.shortcuts import render, get_object_or_404, redirect
-from django.urls import reverse_lazy
-from django.views import View
-from django.views.generic import TemplateView, ListView, DetailView, FormView
+from django.shortcuts import render, get_object_or_404
+from django.views.generic import ListView, DetailView, CreateView
 
 from .forms import AddPostForm, UploadImageForm
-from .models import Women, Category, TagPost
+from .models import Women
 
 menu = [
     {'title': 'Главная', 'url_name': 'home'},
@@ -27,13 +25,6 @@ class WomenHomeView(ListView):
 
     def get_queryset(self):
         return Women.published.all().select_related('cat')
-
-    # def get_context_data(self, *, object_list=None, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-        # context['title'] = 'Главная страница'
-        # context['menu'] = menu
-        # context['cat_selected'] = 0
-        # return context
 
 
 def handle_uploaded_file(f):
@@ -73,18 +64,13 @@ class ShowPostView(DetailView):
         return get_object_or_404(Women.published, slug=self.kwargs[self.slug_url_kwarg])
 
 
-class AddPageView(FormView):
+class AddPageView(CreateView):
     form_class = AddPostForm
     template_name = 'women/add_page.html'
-    success_url = reverse_lazy('home')
     extra_context = {
         'title': 'Добавление статьи',
         'menu': menu,
     }
-
-    def form_valid(self, form):
-        form.save()
-        return super().form_valid(form)
 
 
 def contact(request: HttpRequest) -> HttpResponse:
