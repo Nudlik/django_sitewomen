@@ -13,8 +13,9 @@ class DataMixin:
     extra_context = {'menu': menu}
 
     def __init__(self):
-        # for attr_name, attr_value in vars(self.__class__).items():
-        #     if not attr_name.startswith('__') and not callable(attr_value):
+        # self_items = vars(self.__class__.__mro__[0]).items()
+        # for attr_name, attr_value in self_items:
+        #     if not attr_name.startswith('__') and not callable(attr_value) and attr_name != 'extra_context':
         #         print(f'{attr_name} = {attr_value}')
         #         self.extra_context[attr_name] = attr_value
 
