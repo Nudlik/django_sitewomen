@@ -10,7 +10,8 @@ menu = [
 class DataMixin:
     title_page = None
     cat_selected = None
-    extra_context = {'menu': menu}
+    extra_context = {}
+    paginate_by = 5
 
     def __init__(self):
         # self_items = vars(self.__class__.__mro__[0]).items()
@@ -19,8 +20,8 @@ class DataMixin:
         #         print(f'{attr_name} = {attr_value}')
         #         self.extra_context[attr_name] = attr_value
 
-        # if 'menu' not in self.extra_context:
-        #     self.extra_context['menu'] = menu
+        if 'menu' not in self.extra_context:
+            self.extra_context['menu'] = menu
 
         if self.cat_selected is not None:
             self.extra_context['cat_selected'] = self.cat_selected
