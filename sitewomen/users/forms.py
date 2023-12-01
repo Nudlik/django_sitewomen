@@ -1,4 +1,6 @@
 from django import forms
+from django.contrib.auth import get_user_model
+from django.contrib.auth.forms import AuthenticationForm
 
 
 class MixinWidgets:
@@ -11,7 +13,7 @@ class MixinWidgets:
                 self.fields[field_name].widget = widget
 
 
-class UserLoginForm(MixinWidgets, forms.Form):
+class UserLoginForm(MixinWidgets, AuthenticationForm):
     username = forms.CharField(label='Логин')
     password = forms.CharField(label='Пароль')
 
@@ -20,3 +22,5 @@ class UserLoginForm(MixinWidgets, forms.Form):
         'password': forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Ваш пароль'}),
     }
 
+    class Meta:
+        model = get_user_model()

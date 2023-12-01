@@ -1,23 +1,11 @@
-from django.contrib.auth import authenticate, login, logout
-from django.shortcuts import render, redirect
+from django.contrib.auth.views import LoginView
 
 from users.forms import UserLoginForm
 
 
-def login_user(request):
-    if request.method == 'POST':
-        form = UserLoginForm(request.POST)
-        if form.is_valid():
-            cd = form.cleaned_data
-            user = authenticate(request, username=cd['username'], password=cd['password'])
-            if user is not None and user.is_active:
-                login(request, user)
-                return redirect('home')
-    else:
-        form = UserLoginForm()
-    return render(request, 'users/login.html', {'form': form})
-
-
-def logout_user(request):
-    logout(request)
-    return redirect('users:login')
+class LoginUserView(LoginView):
+    form_class = UserLoginForm
+    template_name = 'users/login.html'
+    extra_context = {
+        'title': 'Авторизация',
+    }
