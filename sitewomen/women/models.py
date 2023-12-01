@@ -1,4 +1,5 @@
 import transliterate
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
 
@@ -35,6 +36,11 @@ class Women(models.Model):
                                    **NULLABLE,
                                    related_name='married',
                                    verbose_name='Супруг')
+    author = models.ForeignKey(get_user_model(),
+                               **NULLABLE,
+                               on_delete=models.SET_NULL,
+                               default=None,
+                               related_name='post_author')
 
     objects = models.Manager()
     published = PublishedManager()

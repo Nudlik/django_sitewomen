@@ -1,3 +1,5 @@
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, HttpRequest
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView, DetailView, CreateView
@@ -23,6 +25,7 @@ def handle_uploaded_file(f):
             destination.write(chunk)
 
 
+@login_required
 def about(request: HttpRequest) -> HttpResponse:
     if request.method == 'POST':
         form = UploadImageForm(request.POST, request.FILES)
@@ -51,10 +54,15 @@ class ShowPostView(DataMixin, DetailView):
         return get_object_or_404(Women.published, slug=self.kwargs[self.slug_url_kwarg])
 
 
-class AddPageView(DataMixin, CreateView):
+class AddPageView(LoginRequiredMixin, DataMixin, CreateView):
     form_class = AddPostForm
     template_name = 'women/add_page.html'
     title_page = 'Добавление статьи'
+
+    def form_valid(self, form):
+        f = form.save(commit=False)
+        f.author = self.request.user
+        return super().form_valid(form)
 
 
 def contact(request: HttpRequest) -> HttpResponse:
