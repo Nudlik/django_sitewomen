@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth import get_user_model
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 
 
 class MixinWidgets:
@@ -28,30 +28,27 @@ class UserLoginForm(MixinWidgets, AuthenticationForm):
         }
 
 
-class RegisterUserForm(MixinWidgets, forms.ModelForm):
+class RegisterUserForm(MixinWidgets, UserCreationForm):
     username = forms.CharField(label='Логин')
-    password = forms.CharField(label='Пароль')
+    password1 = forms.CharField(label='Пароль')
     password2 = forms.CharField(label='Повтор пароля')
 
     class Meta:
         model = get_user_model()
-        fields = ['username', 'email', 'first_name', 'last_name', 'password', 'password2']
+        fields = ['username', 'email', 'first_name', 'last_name', 'password1', 'password2']
         labels = {
             'email': 'E-mail',
             'first_name': 'Имя',
             'last_name': 'Фамилия',
         }
         widgets = {
-            'password': forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Придумайте пароль'}),
+            'username': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.TextInput(attrs={'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'password1': forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Придумайте пароль'}),
             'password2': forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Повторите пароль'}),
         }
-
-    def clean_password2(self):
-        cd = self.cleaned_data
-        password, password2 = cd['password'], cd['password2']
-        if password != password2:
-            raise forms.ValidationError('Пароли не совпадают')
-        return password2
 
     def clean_email(self):
         email = self.cleaned_data['email']
