@@ -12,6 +12,7 @@ class LoginUserView(LoginView):
     template_name = 'users/login.html'
     extra_context = {
         'title': 'Авторизация',
+        'button': 'Войти',
     }
 
 
@@ -21,6 +22,7 @@ class RegisterUser(CreateView):
     success_url = reverse_lazy('users:login')
     extra_context = {
         'title': 'Регистрация',
+        'button': 'Зарегистрироваться',
     }
 
 
