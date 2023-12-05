@@ -18,7 +18,7 @@ class DataMixin:
             self.extra_context['cat_selected'] = self.cat_selected
 
         if self.title_page is not None:
-            self.extra_context['title_page'] = self.title_page
+            self.extra_context['title'] = self.title_page
 
     def get_mixin_context(self, context: dict, **kwargs) -> dict:
         context['menu'] = menu

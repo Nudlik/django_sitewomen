@@ -1,8 +1,9 @@
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.http import HttpResponse, HttpRequest
 from django.shortcuts import render, get_object_or_404
-from django.views.generic import ListView, DetailView, CreateView
+from django.urls import reverse_lazy
+from django.views.generic import ListView, DetailView, CreateView, UpdateView
 
 from .forms import AddPostForm, UploadImageForm
 from .models import Women
@@ -12,7 +13,6 @@ from .utils import DataMixin
 class WomenHomeView(DataMixin, ListView):
     template_name = 'women/index.html'
     context_object_name = 'posts'
-    title_page = 'Главная страница'
     cat_selected = 0
 
     def get_queryset(self):
@@ -54,15 +54,28 @@ class ShowPostView(DataMixin, DetailView):
         return get_object_or_404(Women.published, slug=self.kwargs[self.slug_url_kwarg])
 
 
-class AddPageView(LoginRequiredMixin, DataMixin, CreateView):
+class AddPageView(PermissionRequiredMixin, LoginRequiredMixin, DataMixin, CreateView):
     form_class = AddPostForm
     template_name = 'women/add_page.html'
     title_page = 'Добавление статьи'
+    permission_required = 'women.add_women'
 
     def form_valid(self, form):
         f = form.save(commit=False)
         f.author = self.request.user
         return super().form_valid(form)
+
+
+class UpdatePageView(PermissionRequiredMixin, DataMixin, UpdateView):
+    form_class = AddPostForm
+    template_name = 'women/add_page.html'
+    success_url = reverse_lazy('women:home')
+    title_page = 'Редактирование статьи'
+    permission_required = 'women.change_women'
+
+    def get_object(self, *args, **kwargs):
+        post_slug = self.kwargs.get('post_slug')
+        return get_object_or_404(Women, slug=post_slug)
 
 
 def contact(request: HttpRequest) -> HttpResponse:
