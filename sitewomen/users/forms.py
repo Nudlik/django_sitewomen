@@ -1,3 +1,5 @@
+import datetime
+
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, PasswordChangeForm
@@ -63,16 +65,20 @@ class ProfileUserForm(MixinWidgets, forms.ModelForm):
 
     class Meta:
         model = get_user_model()
-        fields = ['username', 'email', 'first_name', 'last_name']
+        fields = ['photo', 'username', 'email', 'date_birth', 'first_name', 'last_name']
         labels = {
             'first_name': 'Имя',
             'last_name': 'Фамилия',
+            'date_birth': 'Дата рождения',
         }
+        this_year = datetime.date.today().year
         widgets = {
             'username': forms.TextInput(attrs={'class': 'form-control'}),
             'email': forms.TextInput(attrs={'class': 'form-control'}),
             'last_name': forms.TextInput(attrs={'class': 'form-control'}),
             'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'date_birth': forms.SelectDateWidget(years=range(this_year - 100, this_year - 5),
+                                                 attrs={'class': 'form-control'}),
         }
 
 
