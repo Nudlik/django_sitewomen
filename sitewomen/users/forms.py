@@ -61,7 +61,7 @@ class RegisterUserForm(MixinWidgets, UserCreationForm):
 
 class ProfileUserForm(MixinWidgets, forms.ModelForm):
     username = forms.CharField(disabled=True, label='Логин')
-    email = forms.CharField(disabled=True, label='E-mail')
+    email = forms.CharField(disabled=True, required=False, label='E-mail')
 
     class Meta:
         model = get_user_model()
