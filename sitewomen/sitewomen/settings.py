@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'women.apps.WomenConfig',
     'users.apps.UsersConfig',
+    'social_django',
 ]
 
 MIDDLEWARE = [
@@ -141,6 +142,7 @@ LOGOUT_REDIRECT_URL = 'users:login'
 LOGIN_URL = 'users:login'
 
 AUTHENTICATION_BACKENDS = [
+    'social_core.backends.github.GithubOAuth2',
     'django.contrib.auth.backends.ModelBackend',
     'users.authentication.EmailAuthBackend',
 ]
@@ -163,3 +165,6 @@ else:
 
 AUTH_USER_MODEL = 'users.User'
 DEFAULT_USER_IMAGE = MEDIA_URL + 'users/default.png'
+
+# при переходе на постгрес
+# SOCIAL_AUTH_JSONFIELD_ENABLED = True
