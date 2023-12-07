@@ -50,6 +50,8 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'social_django',
     'captcha',
+    'django.contrib.sites',
+    'django.contrib.sitemaps',
 ]
 
 MIDDLEWARE = [
@@ -208,3 +210,6 @@ SOCIAL_AUTH_PIPELINE = (
 # настройки капчи
 CAPTCHA_FONT_SIZE = 40
 CAPTCHA_LENGTH = 6
+
+# настройки sitemap
+SITE_ID = 1
