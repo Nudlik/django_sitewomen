@@ -3,9 +3,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.http import HttpResponse, HttpRequest
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy
-from django.views.generic import ListView, DetailView, CreateView, UpdateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, FormView
 
-from .forms import AddPostForm, UploadImageForm
+from .forms import AddPostForm, UploadImageForm, ContactFrom
 from .models import Women
 from .utils import DataMixin
 
@@ -78,8 +78,15 @@ class UpdatePageView(PermissionRequiredMixin, DataMixin, UpdateView):
         return get_object_or_404(Women, slug=post_slug)
 
 
-def contact(request: HttpRequest) -> HttpResponse:
-    return HttpResponse(f'Обратная связь')
+class ContactFromView(LoginRequiredMixin, DataMixin, FormView):
+    form_class = ContactFrom
+    template_name = 'women/contact.html'
+    success_url = reverse_lazy('home')
+    title_page = 'Обратная связь'
+
+    def form_valid(self, form):
+        print(form.cleaned_data)
+        return super().form_valid(form)
 
 
 def login(request: HttpRequest) -> HttpResponse:

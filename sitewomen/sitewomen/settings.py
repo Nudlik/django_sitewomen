@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'women.apps.WomenConfig',
     'users.apps.UsersConfig',
     'social_django',
+    'captcha',
 ]
 
 MIDDLEWARE = [
@@ -188,3 +189,7 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.load_extra_data',
     'social_core.pipeline.user.user_details',
 )
+
+# настройки капчи
+CAPTCHA_FONT_SIZE = 40
+CAPTCHA_LENGTH = 6

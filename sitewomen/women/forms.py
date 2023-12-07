@@ -1,3 +1,4 @@
+from captcha.fields import CaptchaField
 from django import forms
 
 from .models import Category, Husband, Women
@@ -29,3 +30,10 @@ class AddPostForm(forms.ModelForm):
 
 class UploadImageForm(forms.Form):
     image = forms.ImageField()
+
+
+class ContactFrom(forms.Form):
+    name = forms.CharField(max_length=255, label='Имя')
+    email = forms.EmailField(label='E-mail')
+    content = forms.CharField(widget=forms.Textarea(attrs={'cols': 60, 'rows': 10}), label='Сообщение')
+    captcha = CaptchaField(label='Капча')
