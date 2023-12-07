@@ -14,6 +14,7 @@ class WomenHomeView(DataMixin, ListView):
     template_name = 'women/index.html'
     context_object_name = 'posts'
     cat_selected = 0
+    title_page = 'Главная страница'
 
     def get_queryset(self):
         return Women.published.all().select_related('cat')
